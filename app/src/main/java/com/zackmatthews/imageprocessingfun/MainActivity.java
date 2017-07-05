@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            bmp = Bitmap.createScaledBitmap(bmp, 352, 240, true); //Scale to cif
             avgColor = ImageProcessor.getInstance().getAverageColor(bmp);
             return null;
         }
