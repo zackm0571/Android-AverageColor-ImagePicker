@@ -14,14 +14,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int PHOTO_PICKER_ACTIVITY=91;
+    private static final String STATUS_LABEL_TEXT = "Luminance threshold = %s";
     private ProgressBar progressBar;
+    private SeekBar luminanceSlider;
+    private TextView statusLabel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +52,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        statusLabel = (TextView)findViewById(R.id.statusLabel);
+        luminanceSlider = (SeekBar)findViewById(R.id.luminanceSlider);
+        luminanceSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                statusLabel.setText(String.format(Locale.getDefault(), STATUS_LABEL_TEXT,
+                        String.format(Locale.getDefault(), "%.2f", (float)luminanceSlider.getProgress() / 10)));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     @Override
@@ -76,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == PHOTO_PICKER_ACTIVITY){
             try {
+                if(data == null) return;
                 final Uri imageUri = data.getData();
                 final InputStream imageStream;
                 imageStream = getContentResolver().openInputStream(imageUri);
@@ -108,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         private Bitmap bmp;
         private View bgView;
         private int avgColor = -1;
+        private float luminanceThreshold = 0;
         public AnalyzeColorTask(Bitmap bmp, View bgView){
             this.bmp = bmp;
             this.bgView = bgView;
@@ -117,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             setProgressBarVisible(true);
+            luminanceThreshold = luminanceSlider.getProgress();
         }
 
         @Override
@@ -129,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             bmp = Bitmap.createScaledBitmap(bmp, 352, 240, true); //Scale to cif
-            avgColor = ImageProcessor.getInstance().getAverageColor(bmp);
+            avgColor = ImageProcessor.getInstance().getAverageColor(bmp, luminanceThreshold / 10);
             return null;
         }
     }

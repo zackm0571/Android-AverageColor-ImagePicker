@@ -10,9 +10,10 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
+        android:id="@+id/statusLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Luminance threshold = 0"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"/>
 
@@ -29,5 +30,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"/>
+
+    <SeekBar
+        android:id="@+id/luminanceSlider"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:max="10"
+        android:progress="0"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
